@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Flame } from "lucide-react";
 import type { Product } from "@/data/products";
 import { brl } from "@/lib/format";
 import CountdownTimer from "./CountdownTimer";
@@ -42,12 +42,9 @@ export default function FlashSale({ products }: { products: Product[] }) {
             <div className="text-brand font-semibold text-sm mt-1">
               {brl(p.price)}
             </div>
-            <div className="relative h-4 bg-brand-light rounded-full overflow-hidden mt-1">
-              <div
-                className="absolute inset-y-0 left-0 bg-brand rounded-full"
-                style={{ width: `${30 + (p.sold % 60)}%` }}
-              />
-              <span className="absolute inset-0 flex items-center justify-center text-[10px] text-white font-medium">
+            <div className="relative h-[18px] rounded-full overflow-hidden mt-1 bg-gradient-to-r from-[#ffca28] to-[#ff5b22] flex items-center justify-center gap-1">
+              <Flame size={11} className="text-white fill-white" />
+              <span className="text-[10px] text-white font-semibold tracking-wide">
                 Vendendo rápido
               </span>
             </div>
