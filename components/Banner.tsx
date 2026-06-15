@@ -2,11 +2,18 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { banners, sideBanners } from "@/data/products";
 
-export default function Banner() {
+type BannerItem = { image: string; alt: string };
+
+export default function Banner({
+  banners,
+  sideBanners,
+}: {
+  banners: BannerItem[];
+  sideBanners: BannerItem[];
+}) {
   const [current, setCurrent] = useState(0);
-  const total = banners.length;
+  const total = banners.length || 1;
 
   // auto-play: troca de imagem a cada 3.5s
   useEffect(() => {
@@ -18,7 +25,7 @@ export default function Banner() {
     <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 flex gap-1">
       {banners.map((b, i) => (
         <button
-          key={b.id}
+          key={i}
           aria-label={`Slide ${i + 1}`}
           onClick={() => setCurrent(i)}
           className={`h-1.5 rounded-full transition-all ${
@@ -38,7 +45,7 @@ export default function Banner() {
           style={{ transform: `translateX(-${current * 100}%)` }}
         >
           {banners.map((b, i) => (
-            <div key={b.id} className="relative w-full h-full shrink-0">
+            <div key={i} className="relative w-full h-full shrink-0">
               <Image
                 src={b.image}
                 alt={b.alt}
@@ -60,8 +67,8 @@ export default function Banner() {
             className="flex h-full transition-transform duration-500 ease-out"
             style={{ transform: `translateX(-${current * 100}%)` }}
           >
-            {banners.map((b) => (
-              <div key={b.id} className="relative w-full h-full shrink-0">
+            {banners.map((b, i) => (
+              <div key={i} className="relative w-full h-full shrink-0">
                 <Image src={b.image} alt={b.alt} fill sizes="800px" className="object-cover" />
               </div>
             ))}
@@ -70,8 +77,8 @@ export default function Banner() {
         </div>
 
         <div className="flex flex-col gap-3">
-          {sideBanners.map((b) => (
-            <div key={b.id} className="relative flex-1 rounded-sm overflow-hidden shadow-card">
+          {sideBanners.map((b, i) => (
+            <div key={i} className="relative flex-1 rounded-sm overflow-hidden shadow-card">
               <Image src={b.image} alt={b.alt} fill className="object-cover" />
             </div>
           ))}

@@ -1,6 +1,41 @@
 // Camada de leitura do catálogo: tenta o banco; se vazio/indisponível, usa o mock.
 import { prisma } from "./prisma";
-import { products as mockProducts, type Product } from "@/data/products";
+import {
+  products as mockProducts,
+  banners as mockBanners,
+  sideBanners as mockSide,
+  type Product,
+} from "@/data/products";
+
+export type BannerItem = { image: string; alt: string };
+
+// banners da home: enviados no admin (banco) ou, se não houver, os de exemplo
+export async function getBanners(): Promise<{ hero: BannerItem[]; side: BannerItem[] }> {
+  try {
+    const rows = await prisma.banner.findMany({
+      where: { active: true },
+      orderBy: { order: "asc" },
+    });
+    if (rows.length) {
+      const hero = rows
+        .filter((b) => b.position !== "side")
+        .map((b) => ({ image: b.image, alt: b.alt || "" }));
+      const side = rows
+        .filter((b) => b.position === "side")
+        .map((b) => ({ image: b.image, alt: b.alt || "" }));
+      return {
+        hero: hero.length ? hero : mockBanners.map((b) => ({ image: b.image, alt: b.alt })),
+        side: side.length ? side : mockSide.map((b) => ({ image: b.image, alt: b.alt })),
+      };
+    }
+  } catch {
+    /* sem banco */
+  }
+  return {
+    hero: mockBanners.map((b) => ({ image: b.image, alt: b.alt })),
+    side: mockSide.map((b) => ({ image: b.image, alt: b.alt })),
+  };
+}
 
 type DbProduct = {
   id: string;

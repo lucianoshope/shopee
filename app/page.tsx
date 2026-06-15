@@ -2,7 +2,7 @@ import Banner from "@/components/Banner";
 import QuickActions from "@/components/QuickActions";
 import FlashSale from "@/components/FlashSale";
 import ProductGrid from "@/components/ProductGrid";
-import { getProducts, getFlashSale } from "@/lib/catalog";
+import { getProducts, getFlashSale, getBanners } from "@/lib/catalog";
 import { Truck, Ticket, RefreshCw, Headphones, ChevronRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -15,10 +15,14 @@ const perks = [
 ];
 
 export default async function Home() {
-  const [products, flash] = await Promise.all([getProducts(), getFlashSale()]);
+  const [products, flash, banners] = await Promise.all([
+    getProducts(),
+    getFlashSale(),
+    getBanners(),
+  ]);
   return (
     <div className="max-w-container mx-auto px-2 md:px-4 pb-8">
-      <Banner />
+      <Banner banners={banners.hero} sideBanners={banners.side} />
 
       {/* faixa de benefícios — só desktop */}
       <section className="hidden md:grid bg-white rounded-sm shadow-card mt-4 grid-cols-4 divide-x">
