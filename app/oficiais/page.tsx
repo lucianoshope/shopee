@@ -1,11 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import { categories, products } from "@/data/products";
+import { categories } from "@/data/products";
+import { getDiscounted } from "@/lib/catalog";
 import { brl } from "@/lib/format";
 
-export default function OficiaisPage() {
-  const ofertas = products.filter((p) => p.discount).slice(0, 6);
+export const dynamic = "force-dynamic";
+
+export default async function OficiaisPage() {
+  const ofertas = await getDiscounted();
 
   return (
     <div className="max-w-container mx-auto pb-8 bg-[#f5f5f5]">

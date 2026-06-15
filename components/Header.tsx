@@ -8,6 +8,7 @@ import {
   Camera,
   MessageSquareMore,
 } from "lucide-react";
+import CartButton from "./CartButton";
 
 const topLinks = ["Central do Vendedor", "Baixar", "Seguir Shopee"];
 
@@ -80,12 +81,7 @@ export default function Header() {
         </div>
 
         {/* carrinho + chat */}
-        <Link href="/cart" className="relative shrink-0">
-          <ShoppingCart size={26} />
-          <span className="absolute -top-2 -right-2 bg-white text-brand text-[10px] font-bold rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center">
-            33
-          </span>
-        </Link>
+        <CartButton />
         <Link href="/chat" className="relative shrink-0">
           <MessageSquareMore size={26} />
           <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-white rounded-full border border-brand" />

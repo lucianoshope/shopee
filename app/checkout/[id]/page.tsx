@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { brl } from "@/lib/format";
 import PixPayment from "@/components/PixPayment";
+import ClearCartOnMount from "@/components/ClearCartOnMount";
 import { AlertTriangle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -22,6 +23,7 @@ export default async function CheckoutOrderPage({
 
   return (
     <div className="max-w-md mx-auto px-3 py-6">
+      <ClearCartOnMount />
       <div className="text-center mb-4">
         <span className="text-gray-500 text-sm">Pedido</span>
         <div className="text-brand text-2xl font-semibold">{brl(order.total)}</div>

@@ -1,19 +1,36 @@
+"use client";
+
 import Image from "next/image";
+import Link from "next/link";
+import { ShoppingCart } from "lucide-react";
 import { checkout } from "@/lib/actions";
-import { products } from "@/data/products";
+import { useCart } from "@/components/cart/CartContext";
 import { brl } from "@/lib/format";
 
-export const dynamic = "force-dynamic";
-
 export default function CheckoutPage() {
-  // carrinho de exemplo (mesmos itens da página /cart)
-  const items = products.slice(0, 3).map((p, i) => ({
-    name: p.name,
-    price: p.price,
-    qty: i + 1,
-    image: p.image,
+  const { items, total, ready } = useCart();
+
+  if (ready && items.length === 0) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-16 text-center">
+        <ShoppingCart size={56} className="mx-auto text-gray-300" />
+        <p className="text-gray-500 mt-4">Seu carrinho está vazio</p>
+        <Link
+          href="/"
+          className="inline-block mt-4 bg-brand hover:bg-brand-dark text-white px-8 py-2.5 rounded-sm text-sm"
+        >
+          Ir às compras
+        </Link>
+      </div>
+    );
+  }
+
+  const payload = items.map((it) => ({
+    name: it.name,
+    price: it.price,
+    qty: it.qty,
+    image: it.image,
   }));
-  const total = items.reduce((s, it) => s + it.price * it.qty, 0);
 
   return (
     <div className="max-w-2xl mx-auto px-3 py-6">
@@ -21,18 +38,16 @@ export default function CheckoutPage() {
 
       {/* resumo */}
       <div className="bg-white rounded-lg shadow-card divide-y mb-4">
-        {items.map((it, i) => (
-          <div key={i} className="flex items-center gap-3 p-3">
-            <div className="relative w-12 h-12 rounded overflow-hidden shrink-0">
-              <Image src={it.image} alt={it.name} fill className="object-cover" />
+        {items.map((it) => (
+          <div key={it.id} className="flex items-center gap-3 p-3">
+            <div className="relative w-12 h-12 rounded overflow-hidden shrink-0 bg-gray-100">
+              {it.image && (
+                <Image src={it.image} alt={it.name} fill className="object-cover" />
+              )}
             </div>
-            <span className="flex-1 text-sm text-gray-700 line-clamp-1">
-              {it.name}
-            </span>
+            <span className="flex-1 text-sm text-gray-700 line-clamp-1">{it.name}</span>
             <span className="text-xs text-gray-500">x{it.qty}</span>
-            <span className="text-sm text-brand font-medium">
-              {brl(it.price * it.qty)}
-            </span>
+            <span className="text-sm text-brand font-medium">{brl(it.price * it.qty)}</span>
           </div>
         ))}
         <div className="flex items-center justify-between p-3">
@@ -43,7 +58,7 @@ export default function CheckoutPage() {
 
       {/* dados + pagar */}
       <form action={checkout} className="bg-white rounded-lg shadow-card p-5 space-y-4">
-        <input type="hidden" name="items" value={JSON.stringify(items)} />
+        <input type="hidden" name="items" value={JSON.stringify(payload)} />
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Nome completo *</label>

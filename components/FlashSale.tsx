@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight } from "lucide-react";
-import { flashSaleProducts } from "@/data/products";
+import type { Product } from "@/data/products";
 import { brl } from "@/lib/format";
 
 function Countdown() {
@@ -18,7 +18,8 @@ function Countdown() {
   );
 }
 
-export default function FlashSale() {
+export default function FlashSale({ products }: { products: Product[] }) {
+  const flashSaleProducts = products;
   return (
     <section className="bg-white rounded-sm shadow-card mt-4 p-4">
       <div className="flex items-center justify-between mb-3">

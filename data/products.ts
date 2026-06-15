@@ -11,6 +11,8 @@ export type Product = {
   rating: number; // 0-5
   location: string;
   image: string;
+  images?: string[]; // todas as fotos (produtos do banco)
+  description?: string;
   category: string;
   freeShipping?: boolean;
   flashSale?: boolean;

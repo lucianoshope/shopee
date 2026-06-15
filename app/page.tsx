@@ -3,8 +3,10 @@ import Banner from "@/components/Banner";
 import QuickActions from "@/components/QuickActions";
 import FlashSale from "@/components/FlashSale";
 import ProductGrid from "@/components/ProductGrid";
-import { products } from "@/data/products";
+import { getProducts, getFlashSale } from "@/lib/catalog";
 import { Truck, Ticket, RefreshCw, Headphones, Play } from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 const perks = [
   { icon: Truck, label: "Frete Grátis" },
@@ -18,7 +20,8 @@ const promoCards = [
   { title: "Grandes Marcas", bg: "from-rose-600 to-red-700", img: "https://placehold.co/200x200/9f1239/ffffff?text=Marcas" },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const [products, flash] = await Promise.all([getProducts(), getFlashSale()]);
   return (
     <div className="max-w-container mx-auto px-2 md:px-4 pb-8">
       <Banner />
@@ -55,7 +58,7 @@ export default function Home() {
         ))}
       </section>
 
-      <FlashSale />
+      <FlashSale products={flash} />
       <ProductGrid products={products} title="Recomendados para Você" />
     </div>
   );

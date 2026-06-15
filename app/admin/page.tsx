@@ -1,9 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
-import { deleteProduct } from "@/lib/actions";
+import { deleteProduct, seedCatalog } from "@/lib/actions";
 import { brl } from "@/lib/format";
-import { PackagePlus, Trash2 } from "lucide-react";
+import { PackagePlus, Trash2, Pencil, DownloadCloud } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -38,8 +38,16 @@ export default async function AdminProducts() {
       )}
 
       {products !== null && products.length === 0 && (
-        <div className="bg-white rounded-lg shadow-card p-10 text-center text-gray-400">
-          Nenhum produto ainda. Clique em “Novo Produto” para criar o primeiro.
+        <div className="bg-white rounded-lg shadow-card p-10 text-center">
+          <p className="text-gray-400 mb-4">
+            Nenhum produto ainda. Importe o catálogo de exemplo para começar a editar,
+            ou crie um do zero.
+          </p>
+          <form action={seedCatalog}>
+            <button className="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white px-5 py-2.5 rounded-md text-sm">
+              <DownloadCloud size={18} /> Importar catálogo de exemplo
+            </button>
+          </form>
         </div>
       )}
 
@@ -59,6 +67,13 @@ export default async function AdminProducts() {
               <span className="text-xs text-gray-400 hidden sm:block">
                 {p.stock} em estoque
               </span>
+              <Link
+                href={`/admin/products/${p.id}/edit`}
+                className="text-gray-400 hover:text-brand p-2"
+                title="Editar"
+              >
+                <Pencil size={18} />
+              </Link>
               <form action={deleteProduct}>
                 <input type="hidden" name="id" value={p.id} />
                 <button className="text-gray-400 hover:text-brand p-2" title="Excluir">

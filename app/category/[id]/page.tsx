@@ -1,18 +1,17 @@
 import Link from "next/link";
 import { Filter, Star } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
-import { getByCategory, categories, products } from "@/data/products";
+import { categories } from "@/data/products";
+import { getByCategory, getDiscounted } from "@/lib/catalog";
 
-export function generateStaticParams() {
-  return [...categories.map((c) => ({ id: c.id })), { id: "ofertas" }];
-}
+export const dynamic = "force-dynamic";
 
-export default function CategoryPage({ params }: { params: { id: string } }) {
+export default async function CategoryPage({ params }: { params: { id: string } }) {
   const cat = categories.find((c) => c.id === params.id);
   const list =
     params.id === "ofertas"
-      ? products.filter((p) => p.discount)
-      : getByCategory(params.id);
+      ? await getDiscounted()
+      : await getByCategory(params.id);
   const title = cat?.name ?? (params.id === "ofertas" ? "Ofertas" : params.id);
 
   const sorts = ["Mais Relevantes", "Mais Recentes", "Mais Vendidos", "Preço"];

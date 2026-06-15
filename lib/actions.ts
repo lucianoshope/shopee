@@ -9,6 +9,7 @@ import { saveUploads } from "./storage";
 import { SESSION_COOKIE, sessionToken, checkPassword } from "./auth";
 import { generatePix, zyropayConfigured } from "./zyropay";
 import { SETTING_KEYS } from "./settings";
+import { products as mockProducts, categories as mockCategories } from "@/data/products";
 
 // ---------- AUTH ----------
 export async function login(formData: FormData) {
@@ -76,6 +77,82 @@ export async function deleteProduct(formData: FormData) {
   if (id) await prisma.product.delete({ where: { id } });
   revalidatePath("/");
   revalidatePath("/admin");
+}
+
+export async function updateProduct(formData: FormData) {
+  const id = String(formData.get("id") || "");
+  if (!id) throw new Error("Produto inválido.");
+
+  const name = String(formData.get("name") || "").trim();
+  const price = parseFloat(String(formData.get("price") || "0"));
+  if (!name || !price) throw new Error("Nome e preço são obrigatórios.");
+
+  const oldPriceRaw = String(formData.get("oldPrice") || "");
+  const oldPrice = oldPriceRaw ? parseFloat(oldPriceRaw) : null;
+  const discount =
+    oldPrice && oldPrice > price ? Math.round((1 - price / oldPrice) * 100) : null;
+
+  const files = formData.getAll("images").filter((f): f is File => f instanceof File);
+  const newImages = await saveUploads(files);
+
+  await prisma.product.update({
+    where: { id },
+    data: {
+      name,
+      description: String(formData.get("description") || "") || null,
+      price,
+      oldPrice,
+      discount,
+      stock: parseInt(String(formData.get("stock") || "100")) || 100,
+      location: String(formData.get("location") || "São Paulo"),
+      categoryId: String(formData.get("categoryId") || "") || null,
+      freeShipping: formData.get("freeShipping") === "on",
+      flashSale: formData.get("flashSale") === "on",
+      // só troca as fotos se enviou novas
+      ...(newImages.length ? { images: { set: newImages } } : {}),
+    },
+  });
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  redirect("/admin");
+}
+
+// importa o catálogo de exemplo pro banco (categorias + produtos), uma vez
+export async function seedCatalog() {
+  for (const c of mockCategories) {
+    await prisma.category.upsert({
+      where: { id: c.id },
+      create: { id: c.id, slug: c.id, name: c.name, image: c.image },
+      update: { name: c.name, image: c.image },
+    });
+  }
+
+  const count = await prisma.product.count();
+  if (count === 0) {
+    for (const p of mockProducts) {
+      await prisma.product.create({
+        data: {
+          name: p.name,
+          price: p.price,
+          oldPrice: p.oldPrice ?? null,
+          discount: p.discount ?? null,
+          sold: p.sold,
+          rating: p.rating,
+          location: p.location,
+          images: [p.image],
+          freeShipping: !!p.freeShipping,
+          flashSale: !!p.flashSale,
+          categoryId: p.category,
+          stock: 100,
+        },
+      });
+    }
+  }
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  redirect("/admin");
 }
 
 // ---------- BANNERS ----------

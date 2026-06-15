@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BottomNav from "@/components/BottomNav";
+import { CartProvider } from "@/components/cart/CartContext";
 
 export const metadata: Metadata = {
   title: "Shopee Brasil | Na Shopee Compensa Mais | Frete Grátis e Cupons",
@@ -18,10 +19,12 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body>
-        <Header />
-        <main className="min-h-screen pb-16 md:pb-0">{children}</main>
-        <Footer />
-        <BottomNav />
+        <CartProvider>
+          <Header />
+          <main className="min-h-screen pb-16 md:pb-0">{children}</main>
+          <Footer />
+          <BottomNav />
+        </CartProvider>
       </body>
     </html>
   );

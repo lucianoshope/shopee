@@ -1,26 +1,24 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Star, ShoppingCart, Shield, Truck, Minus, Plus, Heart } from "lucide-react";
-import { getProduct, getByCategory, products } from "@/data/products";
+import { Star, Shield, Truck } from "lucide-react";
+import { getProduct, getByCategory } from "@/lib/catalog";
 import { brl, compactSold } from "@/lib/format";
 import ProductGrid from "@/components/ProductGrid";
+import AddToCart from "@/components/AddToCart";
 
-export function generateStaticParams() {
-  return products.map((p) => ({ id: p.id }));
-}
+export const dynamic = "force-dynamic";
 
-export default function ProductPage({ params }: { params: { id: string } }) {
-  const product = getProduct(params.id);
+export default async function ProductPage({ params }: { params: { id: string } }) {
+  const product = await getProduct(params.id);
   if (!product) notFound();
 
-  const related = getByCategory(product.category)
+  const related = (await getByCategory(product.category))
     .filter((p) => p.id !== product.id)
     .slice(0, 6);
 
-  const thumbs = Array.from({ length: 5 }, (_, i) =>
-    `https://picsum.photos/seed/${product.id}-${i}/120/120`
-  );
+  // miniaturas: usa as fotos reais do produto, ou a própria imagem
+  const thumbs = product.images && product.images.length ? product.images : [product.image];
 
   return (
     <div className="max-w-container mx-auto px-4 py-4">
@@ -106,32 +104,15 @@ export default function ProductPage({ params }: { params: { id: string } }) {
             </div>
           </div>
 
-          {/* quantidade */}
-          <div className="flex items-center gap-3 mt-6 text-sm">
-            <span className="w-24 text-gray-400">Quantidade</span>
-            <div className="flex items-center border rounded-sm">
-              <button className="px-2 py-1.5 text-gray-500 hover:bg-gray-100"><Minus size={14} /></button>
-              <span className="px-4 py-1 border-x">1</span>
-              <button className="px-2 py-1.5 text-gray-500 hover:bg-gray-100"><Plus size={14} /></button>
-            </div>
-            <span className="text-gray-400 text-xs">999 disponíveis</span>
-          </div>
-
           {/* ações */}
-          <div className="flex flex-wrap gap-3 mt-7">
-            <button className="flex items-center gap-2 bg-brand-light text-brand border border-brand px-6 py-3 rounded-sm hover:bg-brand/10 transition-colors">
-              <ShoppingCart size={20} /> Adicionar ao Carrinho
-            </button>
-            <Link
-              href="/cart"
-              className="bg-brand hover:bg-brand-dark text-white px-10 py-3 rounded-sm transition-colors"
-            >
-              Comprar Agora
-            </Link>
-            <button className="flex items-center gap-1 text-gray-500 px-3 hover:text-brand">
-              <Heart size={20} /> Favoritar
-            </button>
-          </div>
+          <AddToCart
+            product={{
+              id: product.id,
+              name: product.name,
+              price: product.price,
+              image: product.image,
+            }}
+          />
         </div>
       </div>
 
