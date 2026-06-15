@@ -3,9 +3,11 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import QRCode from "qrcode";
 import { prisma } from "./prisma";
 import { saveUploads } from "./storage";
 import { SESSION_COOKIE, sessionToken, checkPassword } from "./auth";
+import { generatePix, zyropayConfigured } from "./zyropay";
 
 // ---------- AUTH ----------
 export async function login(formData: FormData) {
@@ -98,4 +100,50 @@ export async function deleteBanner(formData: FormData) {
   if (id) await prisma.banner.delete({ where: { id } });
   revalidatePath("/");
   revalidatePath("/admin/banners");
+}
+
+// ---------- CHECKOUT (PIX Zyropay) ----------
+type CartItem = { name: string; price: number; qty: number; image?: string };
+
+export async function checkout(formData: FormData) {
+  const customer = String(formData.get("customer") || "").trim();
+  const email = String(formData.get("email") || "").trim();
+  const phone = String(formData.get("phone") || "").trim();
+
+  let items: CartItem[] = [];
+  try {
+    items = JSON.parse(String(formData.get("items") || "[]"));
+  } catch {
+    items = [];
+  }
+  const total = items.reduce((s, i) => s + i.price * i.qty, 0);
+  if (!total) throw new Error("Carrinho vazio.");
+
+  // 1) cria o pedido pendente
+  const order = await prisma.order.create({
+    data: { customer, email, phone, total, items, status: "pending" },
+  });
+
+  // 2) gera a cobrança PIX (se o gateway estiver configurado)
+  if (zyropayConfigured()) {
+    try {
+      const charge = await generatePix({
+        value: Number(total.toFixed(2)),
+        externalId: order.id,
+      });
+      const qr = await QRCode.toDataURL(charge.pix, { width: 320, margin: 1 });
+      await prisma.order.update({
+        where: { id: order.id },
+        data: { pixCode: charge.pix, pixQr: qr, txid: charge.movId },
+      });
+    } catch (e) {
+      // mantém o pedido; a tela mostra o erro
+      await prisma.order.update({
+        where: { id: order.id },
+        data: { pixCode: null },
+      });
+    }
+  }
+
+  redirect(`/checkout/${order.id}`);
 }

@@ -87,9 +87,12 @@ export default function CartPage() {
             <span className="text-gray-500 text-sm block">Total ({items.length} itens)</span>
             <span className="text-brand text-2xl font-semibold">{brl(total)}</span>
           </div>
-          <button className="bg-brand hover:bg-brand-dark text-white px-12 py-3 rounded-sm text-base transition-colors">
+          <Link
+            href="/checkout"
+            className="bg-brand hover:bg-brand-dark text-white px-12 py-3 rounded-sm text-base transition-colors"
+          >
             Finalizar Compra
-          </button>
+          </Link>
         </div>
       </div>
     </div>
