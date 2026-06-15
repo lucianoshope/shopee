@@ -5,8 +5,9 @@ import Footer from "@/components/Footer";
 import BottomNav from "@/components/BottomNav";
 
 export const metadata: Metadata = {
-  title: "Shopee Clone — Ofertas e Promoções",
-  description: "Clone visual estilo Shopee construído com Next.js + Tailwind.",
+  title: "Shopee Brasil | Na Shopee Compensa Mais | Frete Grátis e Cupons",
+  description:
+    "Shopee Brasil: as melhores ofertas com frete grátis e cupons de desconto. Compre online com segurança.",
 };
 
 export default function RootLayout({

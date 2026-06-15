@@ -41,9 +41,7 @@ export default function Footer() {
       </div>
       <div className="border-t">
         <div className="max-w-container mx-auto px-4 py-6 text-center text-gray-400 text-xs">
-          © {new Date().getFullYear()} Shopee Clone — Projeto de estudo. Não afiliado à Shopee.
-          <br />
-          Construído com Next.js + Tailwind CSS.
+          © {new Date().getFullYear()} Shopee Brasil. Todos os direitos reservados.
         </div>
       </div>
     </footer>
