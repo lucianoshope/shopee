@@ -1,41 +1,82 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { banners, sideBanners } from "@/data/products";
 
 export default function Banner() {
-  return (
-    <section className="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-3">
-      {/* carrossel principal (estático aqui; foco visual) */}
-      <div className="lg:col-span-2 relative aspect-[1200/360] rounded-sm overflow-hidden shadow-card">
-        <Image
-          src={banners[0].image}
-          alt={banners[0].alt}
-          fill
-          priority
-          className="object-cover"
+  const [current, setCurrent] = useState(0);
+  const total = banners.length;
+
+  // auto-play: troca de imagem a cada 3.5s
+  useEffect(() => {
+    const t = setInterval(() => setCurrent((c) => (c + 1) % total), 3500);
+    return () => clearInterval(t);
+  }, [total]);
+
+  const Dots = () => (
+    <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 flex gap-1">
+      {banners.map((b, i) => (
+        <button
+          key={b.id}
+          aria-label={`Slide ${i + 1}`}
+          onClick={() => setCurrent(i)}
+          className={`h-1.5 rounded-full transition-all ${
+            i === current ? "bg-brand w-4" : "bg-white/70 w-1.5"
+          }`}
         />
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+      ))}
+    </div>
+  );
+
+  return (
+    <>
+      {/* MOBILE: banner full-width, colado na busca, rotativo */}
+      <section className="md:hidden -mx-2 relative aspect-[1080/520] overflow-hidden">
+        <div
+          className="flex h-full transition-transform duration-500 ease-out"
+          style={{ transform: `translateX(-${current * 100}%)` }}
+        >
           {banners.map((b, i) => (
-            <span
-              key={b.id}
-              className={`w-2 h-2 rounded-full ${
-                i === 0 ? "bg-brand" : "bg-white/70"
-              }`}
-            />
+            <div key={b.id} className="relative w-full h-full shrink-0">
+              <Image
+                src={b.image}
+                alt={b.alt}
+                fill
+                priority={i === 0}
+                sizes="100vw"
+                className="object-cover"
+              />
+            </div>
           ))}
         </div>
-      </div>
+        <Dots />
+      </section>
 
-      {/* banners laterais */}
-      <div className="hidden lg:flex flex-col gap-3">
-        {sideBanners.map((b) => (
+      {/* DESKTOP: carrossel grande + banners laterais */}
+      <section className="hidden md:grid mt-4 grid-cols-3 gap-3">
+        <div className="col-span-2 relative aspect-[1200/360] rounded-sm overflow-hidden shadow-card">
           <div
-            key={b.id}
-            className="relative flex-1 rounded-sm overflow-hidden shadow-card"
+            className="flex h-full transition-transform duration-500 ease-out"
+            style={{ transform: `translateX(-${current * 100}%)` }}
           >
-            <Image src={b.image} alt={b.alt} fill className="object-cover" />
+            {banners.map((b) => (
+              <div key={b.id} className="relative w-full h-full shrink-0">
+                <Image src={b.image} alt={b.alt} fill sizes="800px" className="object-cover" />
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-    </section>
+          <Dots />
+        </div>
+
+        <div className="flex flex-col gap-3">
+          {sideBanners.map((b) => (
+            <div key={b.id} className="relative flex-1 rounded-sm overflow-hidden shadow-card">
+              <Image src={b.image} alt={b.alt} fill className="object-cover" />
+            </div>
+          ))}
+        </div>
+      </section>
+    </>
   );
 }
