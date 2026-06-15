@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Banner from "@/components/Banner";
 import QuickActions from "@/components/QuickActions";
-import CategoryNav from "@/components/CategoryNav";
 import FlashSale from "@/components/FlashSale";
 import ProductGrid from "@/components/ProductGrid";
 import { products } from "@/data/products";
@@ -56,7 +55,6 @@ export default function Home() {
         ))}
       </section>
 
-      <CategoryNav />
       <FlashSale />
       <ProductGrid products={products} title="Recomendados para Você" />
     </div>
