@@ -1,0 +1,42 @@
+// Schema pronto para quando você plugar o Supabase (Postgres).
+// Hoje a UI usa dados mockados em /data/products.ts.
+// Setup futuro:
+//   1) DATABASE_URL no .env (connection string do Supabase)
+//   2) npx prisma migrate dev --name init
+//   3) trocar os imports de /data por consultas Prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  slug     String    @unique
+  name     String
+  image    String?
+  products Product[]
+}
+
+model Product {
+  id           String    @id @default(cuid())
+  name         String
+  description  String?
+  price        Decimal   @db.Decimal(10, 2)
+  oldPrice     Decimal?  @db.Decimal(10, 2)
+  discount     Int?
+  stock        Int       @default(0)
+  sold         Int       @default(0)
+  rating       Float     @default(0)
+  location     String?
+  image        String
+  freeShipping Boolean   @default(false)
+  flashSale    Boolean   @default(false)
+  category     Category  @relation(fields: [categoryId], references: [id])
+  categoryId   String
+  createdAt    DateTime  @default(now())
+}
