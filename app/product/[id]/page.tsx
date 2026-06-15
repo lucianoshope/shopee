@@ -126,12 +126,6 @@ export default async function ProductPage({ params }: { params: { id: string } }
             ? product.description
             : `${product.name} — produto de alta qualidade com ótimo custo-benefício. Envio rápido e seguro a partir de ${product.location}. Garantia de satisfação e devolução grátis em até 7 dias.`}
         </p>
-        <ul className="text-sm text-gray-600 mt-4 list-disc pl-5 space-y-1">
-          <li>Material: premium e durável</li>
-          <li>Garantia: 7 dias para devolução</li>
-          <li>Envio: {product.freeShipping ? "frete grátis" : "frete a calcular"}</li>
-          <li>Avaliação média: {product.rating.toFixed(1)} ⭐</li>
-        </ul>
       </div>
 
       {related.length > 0 && (
