@@ -121,11 +121,10 @@ export default async function ProductPage({ params }: { params: { id: string } }
         <h2 className="uppercase text-gray-600 bg-gray-50 px-3 py-2 text-sm rounded-sm">
           Descrição do Produto
         </h2>
-        <p className="text-sm text-gray-600 leading-relaxed mt-4">
-          {product.name} — produto de alta qualidade com ótimo custo-benefício.
-          Envio rápido e seguro a partir de {product.location}. Garantia de
-          satisfação e devolução grátis em até 7 dias. Aproveite a oferta enquanto
-          durar o estoque! (Texto de exemplo — dados mockados.)
+        <p className="text-sm text-gray-600 leading-relaxed mt-4 whitespace-pre-line">
+          {product.description?.trim()
+            ? product.description
+            : `${product.name} — produto de alta qualidade com ótimo custo-benefício. Envio rápido e seguro a partir de ${product.location}. Garantia de satisfação e devolução grátis em até 7 dias.`}
         </p>
         <ul className="text-sm text-gray-600 mt-4 list-disc pl-5 space-y-1">
           <li>Material: premium e durável</li>
