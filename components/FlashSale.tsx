@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight, Flame } from "lucide-react";
 import type { Product } from "@/data/products";
-import { brl } from "@/lib/format";
+import { brl, compactSold } from "@/lib/format";
 import CountdownTimer from "./CountdownTimer";
 
 export default function FlashSale({ products }: { products: Product[] }) {
@@ -45,7 +45,7 @@ export default function FlashSale({ products }: { products: Product[] }) {
             <div className="relative h-[18px] rounded-full overflow-hidden mt-1 bg-gradient-to-r from-[#ffca28] to-[#ff5b22] flex items-center justify-center gap-1">
               <Flame size={11} className="text-white fill-white" />
               <span className="text-[10px] text-white font-semibold tracking-wide">
-                Vendendo rápido
+                {compactSold(p.sold)} vendidos
               </span>
             </div>
           </Link>

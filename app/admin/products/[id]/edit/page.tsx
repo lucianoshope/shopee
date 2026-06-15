@@ -131,13 +131,27 @@ export default async function EditProduct({ params }: { params: { id: string } }
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Enviado de</label>
-          <input
-            name="location"
-            defaultValue={product.location}
-            className="w-full border rounded-md px-3 py-2 text-sm outline-none focus:border-brand"
-          />
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Enviado de</label>
+            <input
+              name="location"
+              defaultValue={product.location}
+              className="w-full border rounded-md px-3 py-2 text-sm outline-none focus:border-brand"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Itens vendidos
+            </label>
+            <input
+              name="sold"
+              type="number"
+              min="0"
+              defaultValue={product.sold}
+              className="w-full border rounded-md px-3 py-2 text-sm outline-none focus:border-brand"
+            />
+          </div>
         </div>
 
         <div className="flex gap-6">
