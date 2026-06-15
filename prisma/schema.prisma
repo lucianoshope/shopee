@@ -1,9 +1,5 @@
-// Schema pronto para quando você plugar o Supabase (Postgres).
-// Hoje a UI usa dados mockados em /data/products.ts.
-// Setup futuro:
-//   1) DATABASE_URL no .env (connection string do Supabase)
-//   2) npx prisma migrate dev --name init
-//   3) trocar os imports de /data por consultas Prisma
+// Banco: Postgres no Railway. DATABASE_URL vem das variáveis do Railway.
+// Fotos ficam no Volume do Railway (não no banco) — aqui guardamos só o caminho.
 
 generator client {
   provider = "prisma-client-js"
@@ -23,20 +19,50 @@ model Category {
 }
 
 model Product {
-  id           String    @id @default(cuid())
+  id           String   @id @default(cuid())
   name         String
   description  String?
-  price        Decimal   @db.Decimal(10, 2)
-  oldPrice     Decimal?  @db.Decimal(10, 2)
+  price        Float
+  oldPrice     Float?
   discount     Int?
-  stock        Int       @default(0)
-  sold         Int       @default(0)
-  rating       Float     @default(0)
-  location     String?
-  image        String
-  freeShipping Boolean   @default(false)
-  flashSale    Boolean   @default(false)
-  category     Category  @relation(fields: [categoryId], references: [id])
-  categoryId   String
-  createdAt    DateTime  @default(now())
+  stock        Int      @default(100)
+  sold         Int      @default(0)
+  rating       Float    @default(5)
+  location     String   @default("São Paulo")
+  images       String[] // caminhos das fotos no volume, ex: /api/uploads/abc.jpg
+  freeShipping Boolean  @default(false)
+  flashSale    Boolean  @default(false)
+  active       Boolean  @default(true)
+  category     Category? @relation(fields: [categoryId], references: [id])
+  categoryId   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// fotos de capa / banner da home
+model Banner {
+  id        String   @id @default(cuid())
+  image     String
+  alt       String?
+  link      String?
+  position  String   @default("hero") // hero | side
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+// pedidos (usados na Fase 2 com o PIX da Zyropay)
+model Order {
+  id          String   @id @default(cuid())
+  customer    String?
+  email       String?
+  phone       String?
+  total       Float
+  status      String   @default("pending") // pending | paid | canceled
+  pixCode     String?  // copia-e-cola
+  pixQr       String?  // imagem/base64 do QR
+  txid        String?  // id da transação no gateway
+  items       Json
+  createdAt   DateTime @default(now())
+  paidAt      DateTime?
 }
