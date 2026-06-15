@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { logout } from "@/lib/actions";
-import { LayoutDashboard, PackagePlus, Images, LogOut, Store } from "lucide-react";
+import { LayoutDashboard, PackagePlus, Images, Settings, LogOut, Store } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -8,6 +8,7 @@ const nav = [
   { href: "/admin", label: "Produtos", icon: LayoutDashboard },
   { href: "/admin/products/new", label: "Novo Produto", icon: PackagePlus },
   { href: "/admin/banners", label: "Capas / Banners", icon: Images },
+  { href: "/admin/settings", label: "Configurações", icon: Settings },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

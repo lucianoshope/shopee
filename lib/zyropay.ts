@@ -1,12 +1,22 @@
 // Integração com o gateway PIX Zyropay.
+// Credenciais vêm das Configurações do admin (banco) ou das variáveis de ambiente.
 // Docs: https://docs.zyropay.io
 
-const BASE =
-  process.env.ZYROPAY_API_URL ||
-  "https://gateway-zyropay-api.rancher.codefabrik.dev";
+import { getSetting } from "./settings";
 
-export function zyropayConfigured(): boolean {
-  return !!(process.env.ZYROPAY_CLIENT_ID && process.env.ZYROPAY_PASSWORD);
+const DEFAULT_BASE = "https://gateway-zyropay-api.rancher.codefabrik.dev";
+
+async function config() {
+  return {
+    base: (await getSetting("ZYROPAY_API_URL")) || DEFAULT_BASE,
+    clientId: await getSetting("ZYROPAY_CLIENT_ID"),
+    password: await getSetting("ZYROPAY_PASSWORD"),
+  };
+}
+
+export async function zyropayConfigured(): Promise<boolean> {
+  const c = await config();
+  return !!(c.clientId && c.password);
 }
 
 // cache do token JWT em memória (vale ~8h conforme a doc)
@@ -15,20 +25,18 @@ let cached: { token: string; exp: number } | null = null;
 async function getToken(): Promise<string> {
   if (cached && cached.exp > Date.now() + 60_000) return cached.token;
 
-  const res = await fetch(`${BASE}/cli/client/authenticate`, {
+  const { base, clientId, password } = await config();
+  const res = await fetch(`${base}/cli/client/authenticate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      clientId: process.env.ZYROPAY_CLIENT_ID,
-      password: process.env.ZYROPAY_PASSWORD,
-    }),
+    body: JSON.stringify({ clientId, password }),
     cache: "no-store",
   });
 
   const json = await res.json().catch(() => null);
   const token = json?.data?.token;
   if (!json?.success || !token) {
-    throw new Error("Falha ao autenticar na Zyropay. Verifique CLIENT_ID/PASSWORD.");
+    throw new Error("Falha ao autenticar na Zyropay. Verifique as credenciais.");
   }
 
   // extrai exp do JWT
@@ -58,9 +66,10 @@ export async function generatePix(params: {
   externalId: string;
   expiration?: number;
 }): Promise<PixCharge> {
+  const { base } = await config();
   const token = await getToken();
 
-  const res = await fetch(`${BASE}/cli/payment/pix/generate-pix`, {
+  const res = await fetch(`${base}/cli/payment/pix/generate-pix`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -86,8 +95,10 @@ export async function generatePix(params: {
 
 // valida o webhook comparando o securityParaphrase com o secret configurado.
 // Se nenhum secret estiver definido, aceita (útil em teste).
-export function validateWebhook(body: { securityParaphrase?: string }): boolean {
-  const secret = process.env.ZYROPAY_WEBHOOK_SECRET;
+export async function validateWebhook(body: {
+  securityParaphrase?: string;
+}): Promise<boolean> {
+  const secret = await getSetting("ZYROPAY_WEBHOOK_SECRET");
   if (!secret) return true;
   return body?.securityParaphrase === secret;
 }

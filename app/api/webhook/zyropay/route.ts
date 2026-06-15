@@ -10,7 +10,7 @@ export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ error: "invalid body" }, { status: 400 });
 
-  if (!validateWebhook(body)) {
+  if (!(await validateWebhook(body))) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 

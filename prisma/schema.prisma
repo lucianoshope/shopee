@@ -51,6 +51,13 @@ model Banner {
   createdAt DateTime @default(now())
 }
 
+// configurações chave-valor (ex: credenciais da Zyropay editadas pelo admin)
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
 // pedidos (usados na Fase 2 com o PIX da Zyropay)
 model Order {
   id          String   @id @default(cuid())

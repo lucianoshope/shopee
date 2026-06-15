@@ -8,6 +8,7 @@ import { prisma } from "./prisma";
 import { saveUploads } from "./storage";
 import { SESSION_COOKIE, sessionToken, checkPassword } from "./auth";
 import { generatePix, zyropayConfigured } from "./zyropay";
+import { SETTING_KEYS } from "./settings";
 
 // ---------- AUTH ----------
 export async function login(formData: FormData) {
@@ -125,7 +126,7 @@ export async function checkout(formData: FormData) {
   });
 
   // 2) gera a cobrança PIX (se o gateway estiver configurado)
-  if (zyropayConfigured()) {
+  if (await zyropayConfigured()) {
     try {
       const charge = await generatePix({
         value: Number(total.toFixed(2)),
@@ -146,4 +147,18 @@ export async function checkout(formData: FormData) {
   }
 
   redirect(`/checkout/${order.id}`);
+}
+
+// ---------- CONFIGURAÇÕES (credenciais Zyropay) ----------
+export async function saveSettings(formData: FormData) {
+  for (const key of SETTING_KEYS) {
+    const value = String(formData.get(key) ?? "").trim();
+    await prisma.setting.upsert({
+      where: { key },
+      create: { key, value },
+      update: { value },
+    });
+  }
+  revalidatePath("/admin/settings");
+  redirect("/admin/settings?saved=1");
 }
