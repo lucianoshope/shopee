@@ -109,13 +109,35 @@ export function getByCategory(catId: string) {
   return products.filter((p) => p.category === catId);
 }
 
+// banners padrão renderizados em CSS (sem imagem externa).
+// O admin pode enviar imagens próprias que substituem estes.
 export const banners = [
-  { id: 1, image: "https://picsum.photos/seed/banner1/1200/360", alt: "Promoção 6.15" },
-  { id: 2, image: "https://picsum.photos/seed/banner2/1200/360", alt: "Frete Grátis" },
-  { id: 3, image: "https://picsum.photos/seed/banner3/1200/360", alt: "Ofertas do Dia" },
+  {
+    title: "APROVEITE OFERTAS COM",
+    subtitle: "CUPONS DE DESCONTO E FRETE GRÁTIS",
+    gradient: "from-[#ee4d2d] to-[#f53d2d]",
+  },
+  {
+    title: "OFERTAS DO DIA",
+    subtitle: "ATÉ 70% DE DESCONTO",
+    gradient: "from-[#d73211] to-[#ee4d2d]",
+  },
+  {
+    title: "FRETE GRÁTIS",
+    subtitle: "EM MILHARES DE PRODUTOS",
+    gradient: "from-[#f63] to-[#d73211]",
+  },
 ];
 
 export const sideBanners = [
-  { id: 1, image: "https://picsum.photos/seed/side1/600/175", alt: "Cupons" },
-  { id: 2, image: "https://picsum.photos/seed/side2/600/175", alt: "Cashback" },
+  {
+    title: "CASHBACK",
+    subtitle: "EM TODAS AS COMPRAS",
+    gradient: "from-[#b3122b] to-[#7a0d1d]",
+  },
+  {
+    title: "FRETE GRÁTIS EXCLUSIVO",
+    subtitle: "Confira condições",
+    gradient: "from-[#d73211] to-[#9f1239]",
+  },
 ];

@@ -3,7 +3,44 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 
-type BannerItem = { image: string; alt: string };
+type BannerItem = {
+  image?: string;
+  alt?: string;
+  title?: string;
+  subtitle?: string;
+  gradient?: string;
+};
+
+function BannerContent({ b, priority }: { b: BannerItem; priority?: boolean }) {
+  if (b.image) {
+    return (
+      <Image
+        src={b.image}
+        alt={b.alt || ""}
+        fill
+        priority={priority}
+        sizes="(max-width: 1024px) 100vw, 800px"
+        className="object-cover"
+      />
+    );
+  }
+  return (
+    <div
+      className={`w-full h-full bg-gradient-to-r ${
+        b.gradient || "from-brand to-brand-dark"
+      } flex flex-col items-center justify-center text-white text-center px-4`}
+    >
+      {b.title && (
+        <span className="text-sm md:text-2xl font-medium tracking-wide">{b.title}</span>
+      )}
+      {b.subtitle && (
+        <span className="text-base md:text-3xl font-bold tracking-wide mt-1">
+          {b.subtitle}
+        </span>
+      )}
+    </div>
+  );
+}
 
 export default function Banner({
   banners,
@@ -29,7 +66,7 @@ export default function Banner({
           aria-label={`Slide ${i + 1}`}
           onClick={() => setCurrent(i)}
           className={`h-1.5 rounded-full transition-all ${
-            i === current ? "bg-brand w-4" : "bg-white/70 w-1.5"
+            i === current ? "bg-white w-4" : "bg-white/60 w-1.5"
           }`}
         />
       ))}
@@ -46,14 +83,7 @@ export default function Banner({
         >
           {banners.map((b, i) => (
             <div key={i} className="relative w-full h-full shrink-0">
-              <Image
-                src={b.image}
-                alt={b.alt}
-                fill
-                priority={i === 0}
-                sizes="100vw"
-                className="object-cover"
-              />
+              <BannerContent b={b} priority={i === 0} />
             </div>
           ))}
         </div>
@@ -69,7 +99,7 @@ export default function Banner({
           >
             {banners.map((b, i) => (
               <div key={i} className="relative w-full h-full shrink-0">
-                <Image src={b.image} alt={b.alt} fill sizes="800px" className="object-cover" />
+                <BannerContent b={b} priority={i === 0} />
               </div>
             ))}
           </div>
@@ -78,8 +108,11 @@ export default function Banner({
 
         <div className="flex flex-col gap-3">
           {sideBanners.map((b, i) => (
-            <div key={i} className="relative flex-1 rounded-sm overflow-hidden shadow-card">
-              <Image src={b.image} alt={b.alt} fill className="object-cover" />
+            <div
+              key={i}
+              className="relative flex-1 rounded-sm overflow-hidden shadow-card"
+            >
+              <BannerContent b={b} />
             </div>
           ))}
         </div>

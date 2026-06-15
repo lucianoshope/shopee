@@ -7,9 +7,16 @@ import {
   type Product,
 } from "@/data/products";
 
-export type BannerItem = { image: string; alt: string };
+// banner pode ser uma imagem enviada (image) ou um banner em CSS (title/subtitle/gradient)
+export type BannerItem = {
+  image?: string;
+  alt?: string;
+  title?: string;
+  subtitle?: string;
+  gradient?: string;
+};
 
-// banners da home: enviados no admin (banco) ou, se não houver, os de exemplo
+// banners da home: enviados no admin (banco) ou, se não houver, os de exemplo (CSS)
 export async function getBanners(): Promise<{ hero: BannerItem[]; side: BannerItem[] }> {
   try {
     const rows = await prisma.banner.findMany({
@@ -24,17 +31,14 @@ export async function getBanners(): Promise<{ hero: BannerItem[]; side: BannerIt
         .filter((b) => b.position === "side")
         .map((b) => ({ image: b.image, alt: b.alt || "" }));
       return {
-        hero: hero.length ? hero : mockBanners.map((b) => ({ image: b.image, alt: b.alt })),
-        side: side.length ? side : mockSide.map((b) => ({ image: b.image, alt: b.alt })),
+        hero: hero.length ? hero : mockBanners,
+        side: side.length ? side : mockSide,
       };
     }
   } catch {
     /* sem banco */
   }
-  return {
-    hero: mockBanners.map((b) => ({ image: b.image, alt: b.alt })),
-    side: mockSide.map((b) => ({ image: b.image, alt: b.alt })),
-  };
+  return { hero: mockBanners, side: mockSide };
 }
 
 type DbProduct = {
