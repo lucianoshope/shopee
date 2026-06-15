@@ -54,6 +54,8 @@ type DbProduct = {
   images: string[];
   freeShipping: boolean;
   flashSale: boolean;
+  international: boolean;
+  relatedIds: string[];
   categoryId: string | null;
 };
 
@@ -73,6 +75,8 @@ function mapDb(p: DbProduct): Product {
     category: p.categoryId ?? "",
     freeShipping: p.freeShipping,
     flashSale: p.flashSale,
+    international: p.international,
+    relatedIds: p.relatedIds,
   };
 }
 
@@ -97,6 +101,20 @@ export async function getProduct(id: string): Promise<Product | undefined> {
     /* sem banco */
   }
   return mockProducts.find((p) => p.id === id);
+}
+
+export async function getProductsByIds(ids: string[]): Promise<Product[]> {
+  if (!ids.length) return [];
+  try {
+    const rows = await prisma.product.findMany({
+      where: { id: { in: ids }, active: true },
+    });
+    const map = new Map(rows.map((r) => [r.id, mapDb(r)]));
+    return ids.map((id) => map.get(id)).filter(Boolean) as Product[];
+  } catch {
+    /* sem banco */
+  }
+  return mockProducts.filter((p) => ids.includes(p.id));
 }
 
 export async function getByCategory(categoryId: string): Promise<Product[]> {

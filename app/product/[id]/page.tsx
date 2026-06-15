@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Star, Shield, Truck } from "lucide-react";
-import { getProduct, getByCategory } from "@/lib/catalog";
+import { getProduct, getByCategory, getProductsByIds } from "@/lib/catalog";
 import { brl, compactSold } from "@/lib/format";
 import ProductGrid from "@/components/ProductGrid";
 import AddToCart from "@/components/AddToCart";
@@ -13,7 +13,12 @@ export default async function ProductPage({ params }: { params: { id: string } }
   const product = await getProduct(params.id);
   if (!product) notFound();
 
-  const related = (await getByCategory(product.category))
+  // relacionados: usa os escolhidos no admin; senão, os da mesma categoria
+  const related = (
+    product.relatedIds && product.relatedIds.length
+      ? await getProductsByIds(product.relatedIds)
+      : await getByCategory(product.category)
+  )
     .filter((p) => p.id !== product.id)
     .slice(0, 6);
 

@@ -32,6 +32,8 @@ model Product {
   images       String[] // caminhos das fotos no volume, ex: /api/uploads/abc.jpg
   freeShipping Boolean  @default(false)
   flashSale    Boolean  @default(false)
+  international Boolean  @default(false)
+  relatedIds   String[] // ids dos produtos relacionados escolhidos no admin
   active       Boolean  @default(true)
   category     Category? @relation(fields: [categoryId], references: [id])
   categoryId   String?

@@ -17,6 +17,17 @@ async function getCategories() {
   return mockCategories.map((c) => ({ id: c.id, name: c.name }));
 }
 
+async function getProductList() {
+  try {
+    return await prisma.product.findMany({
+      select: { id: true, name: true },
+      orderBy: { createdAt: "desc" },
+    });
+  } catch {
+    return [];
+  }
+}
+
 export default async function EditProduct({ params }: { params: { id: string } }) {
   let product;
   try {
@@ -26,7 +37,10 @@ export default async function EditProduct({ params }: { params: { id: string } }
   }
   if (!product) notFound();
 
-  const categories = await getCategories();
+  const [categories, allProducts] = await Promise.all([
+    getCategories(),
+    getProductList(),
+  ]);
 
   return (
     <div className="max-w-2xl">
@@ -154,7 +168,7 @@ export default async function EditProduct({ params }: { params: { id: string } }
           </div>
         </div>
 
-        <div className="flex gap-6">
+        <div className="flex flex-wrap gap-4 md:gap-6">
           <label className="flex items-center gap-2 text-sm text-gray-700">
             <input
               type="checkbox"
@@ -173,7 +187,43 @@ export default async function EditProduct({ params }: { params: { id: string } }
             />{" "}
             Oferta relâmpago
           </label>
+          <label className="flex items-center gap-2 text-sm text-gray-700">
+            <input
+              type="checkbox"
+              name="international"
+              defaultChecked={product.international}
+              className="accent-brand"
+            />{" "}
+            Vendedor internacional
+          </label>
         </div>
+
+        {/* relacionados */}
+        {allProducts.length > 0 && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Produtos relacionados (opcional)
+            </label>
+            <select
+              name="relatedIds"
+              multiple
+              size={6}
+              defaultValue={product.relatedIds}
+              className="w-full border rounded-md px-3 py-2 text-sm outline-none focus:border-brand"
+            >
+              {allProducts
+                .filter((p) => p.id !== product.id)
+                .map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+            </select>
+            <p className="text-xs text-gray-400 mt-1">
+              Segure Ctrl (ou Cmd no Mac) para escolher vários. Se deixar vazio, usa os da mesma categoria.
+            </p>
+          </div>
+        )}
 
         <button className="w-full bg-brand hover:bg-brand-dark text-white rounded-md py-3 font-medium transition-colors">
           Salvar alterações

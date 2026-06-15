@@ -64,6 +64,8 @@ export async function createProduct(formData: FormData) {
       categoryId: String(formData.get("categoryId") || "") || null,
       freeShipping: formData.get("freeShipping") === "on",
       flashSale: formData.get("flashSale") === "on",
+      international: formData.get("international") === "on",
+      relatedIds: formData.getAll("relatedIds").map(String).filter(Boolean),
       images,
     },
   });
@@ -110,6 +112,8 @@ export async function updateProduct(formData: FormData) {
       categoryId: String(formData.get("categoryId") || "") || null,
       freeShipping: formData.get("freeShipping") === "on",
       flashSale: formData.get("flashSale") === "on",
+      international: formData.get("international") === "on",
+      relatedIds: formData.getAll("relatedIds").map(String).filter(Boolean),
       // só troca as fotos se enviou novas
       ...(newImages.length ? { images: { set: newImages } } : {}),
     },

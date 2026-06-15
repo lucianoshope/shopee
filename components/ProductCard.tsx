@@ -5,7 +5,7 @@ import type { Product } from "@/data/products";
 import { brl, compactSold } from "@/lib/format";
 
 export default function ProductCard({ product }: { product: Product }) {
-  const intl = product.location === "Importado";
+  const intl = product.international ?? product.location === "Importado";
   return (
     <Link
       href={`/product/${product.id}`}

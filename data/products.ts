@@ -16,6 +16,8 @@ export type Product = {
   category: string;
   freeShipping?: boolean;
   flashSale?: boolean;
+  international?: boolean;
+  relatedIds?: string[];
 };
 
 export type Category = {
