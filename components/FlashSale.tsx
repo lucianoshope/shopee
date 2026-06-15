@@ -3,20 +3,7 @@ import Image from "next/image";
 import { ChevronRight } from "lucide-react";
 import type { Product } from "@/data/products";
 import { brl } from "@/lib/format";
-
-function Countdown() {
-  // contador estático (visual). Pode virar client component depois.
-  const blocks = ["02", "14", "37"];
-  return (
-    <div className="flex items-center gap-1">
-      {blocks.map((b, i) => (
-        <span key={i} className="bg-black text-white text-sm font-bold px-1.5 py-0.5 rounded-sm">
-          {b}
-        </span>
-      ))}
-    </div>
-  );
-}
+import CountdownTimer from "./CountdownTimer";
 
 export default function FlashSale({ products }: { products: Product[] }) {
   const flashSaleProducts = products;
@@ -27,7 +14,7 @@ export default function FlashSale({ products }: { products: Product[] }) {
           <h2 className="text-brand text-xl font-bold uppercase tracking-wide">
             ⚡ Ofertas Relâmpago
           </h2>
-          <Countdown />
+          <CountdownTimer />
         </div>
         <Link
           href="/category/ofertas"
