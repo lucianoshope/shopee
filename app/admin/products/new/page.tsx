@@ -41,9 +41,9 @@ export default async function NewProduct() {
         {/* fotos */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Fotos do produto
+            Fotos do produto (até 4)
           </label>
-          <ImagePicker name="images" multiple />
+          <ImagePicker name="images" multiple max={4} />
         </div>
 
         {/* nome */}
