@@ -232,6 +232,42 @@ export async function checkout(formData: FormData) {
   redirect(`/checkout/${order.id}`);
 }
 
+// ---------- AVALIAÇÕES ----------
+export async function addReview(formData: FormData) {
+  const productId = String(formData.get("productId") || "");
+  const author = String(formData.get("author") || "").trim();
+  if (!productId || !author) throw new Error("Produto e nome são obrigatórios.");
+
+  const rating = Math.min(5, Math.max(1, parseInt(String(formData.get("rating") || "5")) || 5));
+  const text = String(formData.get("text") || "") || null;
+
+  // foto de perfil (1) + fotos da avaliação (várias)
+  const avatarFile = formData.get("avatar");
+  const avatar =
+    avatarFile instanceof File && avatarFile.size > 0
+      ? (await saveUploads([avatarFile]))[0] || null
+      : null;
+
+  const photoFiles = formData.getAll("images").filter((f): f is File => f instanceof File);
+  const images = await saveUploads(photoFiles);
+
+  await prisma.review.create({
+    data: { productId, author, avatar, rating, text, images },
+  });
+
+  revalidatePath(`/product/${productId}`);
+  revalidatePath(`/admin/products/${productId}/reviews`);
+  redirect(`/admin/products/${productId}/reviews`);
+}
+
+export async function deleteReview(formData: FormData) {
+  const id = String(formData.get("id") || "");
+  const productId = String(formData.get("productId") || "");
+  if (id) await prisma.review.delete({ where: { id } });
+  revalidatePath(`/product/${productId}`);
+  revalidatePath(`/admin/products/${productId}/reviews`);
+}
+
 // ---------- CONFIGURAÇÕES (credenciais Zyropay) ----------
 export async function saveSettings(formData: FormData) {
   for (const key of SETTING_KEYS) {

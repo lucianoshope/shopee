@@ -130,6 +130,27 @@ export async function getByCategory(categoryId: string): Promise<Product[]> {
   return mockProducts.filter((p) => p.category === categoryId);
 }
 
+export type ReviewItem = {
+  id: string;
+  author: string;
+  avatar: string | null;
+  rating: number;
+  text: string | null;
+  images: string[];
+  createdAt: Date;
+};
+
+export async function getReviews(productId: string): Promise<ReviewItem[]> {
+  try {
+    return await prisma.review.findMany({
+      where: { productId },
+      orderBy: { createdAt: "desc" },
+    });
+  } catch {
+    return [];
+  }
+}
+
 export async function getFlashSale(): Promise<Product[]> {
   const all = await getProducts();
   const flash = all.filter((p) => p.flashSale);

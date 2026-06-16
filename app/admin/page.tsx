@@ -3,7 +3,7 @@ import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { deleteProduct, seedCatalog } from "@/lib/actions";
 import { brl } from "@/lib/format";
-import { PackagePlus, Trash2, Pencil, DownloadCloud } from "lucide-react";
+import { PackagePlus, Trash2, Pencil, DownloadCloud, Star } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -67,6 +67,13 @@ export default async function AdminProducts() {
               <span className="text-xs text-gray-400 hidden sm:block">
                 {p.stock} em estoque
               </span>
+              <Link
+                href={`/admin/products/${p.id}/reviews`}
+                className="text-gray-400 hover:text-brand p-2"
+                title="Avaliações"
+              >
+                <Star size={18} />
+              </Link>
               <Link
                 href={`/admin/products/${p.id}/edit`}
                 className="text-gray-400 hover:text-brand p-2"

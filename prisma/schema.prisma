@@ -37,8 +37,22 @@ model Product {
   active       Boolean  @default(true)
   category     Category? @relation(fields: [categoryId], references: [id])
   categoryId   String?
+  reviews      Review[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+// avaliações dos clientes (cadastradas no admin por produto)
+model Review {
+  id        String   @id @default(cuid())
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+  author    String
+  avatar    String?  // foto de perfil
+  rating    Int      @default(5) // 1-5 estrelas
+  text      String?
+  images    String[] // fotos enviadas na avaliação
+  createdAt DateTime @default(now())
 }
 
 // fotos de capa / banner da home

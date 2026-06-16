@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Star, Shield, Truck } from "lucide-react";
-import { getProduct, getByCategory, getProductsByIds } from "@/lib/catalog";
+import { getProduct, getByCategory, getProductsByIds, getReviews } from "@/lib/catalog";
+import ProductReviews from "@/components/ProductReviews";
 import { brl, compactSold } from "@/lib/format";
 import ProductGrid from "@/components/ProductGrid";
 import AddToCart from "@/components/AddToCart";
@@ -14,6 +15,8 @@ export default async function ProductPage({ params }: { params: { id: string } }
   if (!product) notFound();
 
   // relacionados: usa os escolhidos no admin; senão, os da mesma categoria
+  const reviews = await getReviews(product.id);
+
   const related = (
     product.relatedIds && product.relatedIds.length
       ? await getProductsByIds(product.relatedIds)
@@ -116,6 +119,8 @@ export default async function ProductPage({ params }: { params: { id: string } }
             : `${product.name} — produto de alta qualidade com ótimo custo-benefício. Envio rápido e seguro a partir de ${product.location}. Garantia de satisfação e devolução grátis em até 7 dias.`}
         </p>
       </div>
+
+      <ProductReviews reviews={reviews} />
 
       {related.length > 0 && (
         <ProductGrid products={related} title="Produtos Relacionados" />

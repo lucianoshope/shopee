@@ -44,7 +44,15 @@ export default async function EditProduct({ params }: { params: { id: string } }
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Editar Produto</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-gray-800">Editar Produto</h1>
+        <a
+          href={`/admin/products/${product.id}/reviews`}
+          className="text-sm text-brand border border-brand rounded-md px-3 py-1.5 hover:bg-brand-50"
+        >
+          Gerenciar avaliações
+        </a>
+      </div>
 
       <form action={updateProduct} className="bg-white rounded-lg shadow-card p-6 space-y-5">
         <input type="hidden" name="id" value={product.id} />
