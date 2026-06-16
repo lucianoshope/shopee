@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Star, Trash2, ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import type { ReviewItem } from "@/lib/catalog";
 import { addReview, deleteReview } from "@/lib/actions";
 import ImagePicker from "@/components/admin/ImagePicker";
 import StarPicker from "@/components/admin/StarPicker";
@@ -15,7 +16,7 @@ export default async function ProductReviewsAdmin({
   params: { id: string };
 }) {
   let product;
-  let reviews;
+  let reviews: ReviewItem[] = [];
   try {
     product = await prisma.product.findUnique({ where: { id: params.id } });
     reviews = await prisma.review.findMany({
