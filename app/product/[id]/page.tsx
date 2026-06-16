@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Star, Shield, Truck } from "lucide-react";
@@ -6,6 +5,7 @@ import { getProduct, getByCategory, getProductsByIds } from "@/lib/catalog";
 import { brl, compactSold } from "@/lib/format";
 import ProductGrid from "@/components/ProductGrid";
 import AddToCart from "@/components/AddToCart";
+import ProductGallery from "@/components/ProductGallery";
 
 export const dynamic = "force-dynamic";
 
@@ -40,23 +40,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
 
       <div className="bg-white rounded-sm shadow-card p-4 md:p-6 grid grid-cols-1 md:grid-cols-[400px_1fr] gap-6">
         {/* galeria */}
-        <div>
-          <div className="relative aspect-square rounded-sm overflow-hidden border">
-            <Image src={product.image} alt={product.name} fill className="object-cover" priority />
-          </div>
-          <div className="flex gap-2 mt-3">
-            {thumbs.map((t, i) => (
-              <div
-                key={i}
-                className={`relative w-16 h-16 rounded-sm overflow-hidden border-2 cursor-pointer ${
-                  i === 0 ? "border-brand" : "border-transparent hover:border-brand/50"
-                }`}
-              >
-                <Image src={t} alt={`thumb ${i}`} fill className="object-cover" />
-              </div>
-            ))}
-          </div>
-        </div>
+        <ProductGallery images={thumbs} name={product.name} />
 
         {/* infos */}
         <div>
