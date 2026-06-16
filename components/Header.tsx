@@ -1,12 +1,12 @@
 import Link from "next/link";
 import {
   Search,
-  ShoppingCart,
   Bell,
   HelpCircle,
   Globe,
   Camera,
   MessageSquareMore,
+  ShoppingBag,
 } from "lucide-react";
 import CartButton from "./CartButton";
 
@@ -52,8 +52,10 @@ export default function Header() {
       <div className="max-w-container mx-auto px-3 md:px-4 flex items-center gap-3 md:gap-8 py-2.5 md:py-3">
         {/* logo — só desktop */}
         <Link href="/" className="hidden md:flex items-center gap-2 shrink-0">
+          <span className="bg-white rounded-lg p-1.5 flex items-center justify-center">
+            <ShoppingBag size={24} className="text-brand" />
+          </span>
           <span className="text-3xl font-extrabold tracking-tight">Shopee</span>
-          <ShoppingCart size={28} />
         </Link>
 
         <div className="flex-1">
